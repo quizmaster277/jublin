@@ -1,0 +1,61 @@
+version: '3.8'
+
+services:
+  # Development environment with Maven and JDK 21
+  jublin-dev:
+    build:
+      context: .
+      target: dev
+    container_name: jublin-dev
+    volumes:
+      - .:/app
+      - maven-cache:/root/.m2
+    working_dir: /app
+    stdin_open: true
+    tty: true
+    command: bash
+    environment:
+      - MAVEN_OPTS=-Xmx2g
+
+  # Build service - compiles and packages the app
+  jublin-build:
+    build:
+      context: .
+      target: builder
+    container_name: jublin-build
+    volumes:
+      - .:/app
+      - maven-cache:/root/.m2
+    working_dir: /app
+    command: mvn clean package -DskipTests
+
+  # Runtime service - runs the built application
+  jublin-run:
+    build:
+      context: .
+      target: runtime
+    container_name: jublin-run
+    volumes:
+      - ./apk-input:/app/input:ro
+      - ./apk-output:/app/output:rw
+    working_dir: /app
+    # For GUI apps, you'd need X11 forwarding or VNC
+    # This runs headless for CLI/testing
+    command: java --enable-native-access=ALL-UNNAMED -jar jublin.jar
+    depends_on:
+      - jublin-build
+
+  # Test service - runs unit tests
+  jublin-test:
+    build:
+      context: .
+      target: builder
+    container_name: jublin-test
+    volumes:
+      - .:/app
+      - maven-cache:/root/.m2
+    working_dir: /app
+    command: mvn test
+
+volumes:
+  maven-cache:

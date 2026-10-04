@@ -1,0 +1,41 @@
+# Maven
+target/
+*.jar
+*.war
+*.ear
+*.class
+
+# IDE
+.idea/
+*.iml
+*.ipr
+*.iws
+.vscode/
+.classpath
+.project
+.settings/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Logs
+logs/
+*.log
+
+# Docker
+docker-compose.override.yml
+
+# Test APKs (if any)
+*.apk
+
+# Temporary files
+*.tmp
+*.temp
+
+# Build outputs
+*.exe
+*.msi
+*.dmg
+*.deb
+*.rpm
